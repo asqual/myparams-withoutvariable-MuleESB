@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="0aeae8e3-4384-45f0-b58d-dbff3c5d5c84" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="myparams-withoutvariableFlow" doc:id="afd3c901-1183-4c11-9e15-da7df496bf7b" >
+		<http:listener doc:name="Listener" doc:id="b7fbe6a8-b98e-421a-8755-afe0d2d5d9b4" config-ref="HTTP_Listener_config" path="weather/{cityid}"/>
+		<ee:transform doc:name="Transform Message" doc:id="05a722bc-7e91-4c97-aac6-c041da4a8785" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	'City ID': attributes.uriParams.cityid,
+	'State': attributes.queryParams.state	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="89ddbe17-04f7-466a-b190-0f2012fa3ea1" message="you sent #[{'City ID': attributes.uriParams.cityid, 'State': attributes.queryParams.state}]"/>
+	</flow>
+</mule>
